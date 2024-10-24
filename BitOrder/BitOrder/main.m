@@ -1,43 +1,30 @@
 #include <stdio.h>
-
-void change(long long int *number){
-    char temp1 , temp2;         //to store bits for swaping
-    long long int base = 1;
-    int right = 0;              //index for accessing bits
+ 
+long long int LittleToBigEndian(long long int number) {
+// Converts a 64-bit integer from little-endian to big-endian format
+    return 
+        ((number & 0x00000000000000FF) << 56) |  
+        ((number & 0xFF00000000000000) >> 56) |
+        (((number & 0x000000000000FF00) << 40) |  
+        ((number & 0x00FF000000000000) >> 40)) |
+        (((number & 0x0000000000FF0000) << 24) |  
+        ((number & 0x0000FF0000000000) >> 24))|
+        (((number & 0x00000000FF000000) << 8) |  
+        ((number & 0x000000FF00000000) >> 8)); 
+}
+ 
+void printHex(long long int number) {
+    printf("0x%016llX\n", number);
+}
+ 
+int main() {
+    long long int testNumber = 0x0102030405060708;  
+    printf("Original : ");
+    printHex(testNumber);
     
-    while(right <= 32){
-        int left = 63 - right;
-        temp1 = (*number >> right) & 1;     //store the right bit
-        temp2 = (*number >> left) & 1;    //store the second bit
-        if( temp1 != temp2){
-            *number ^= base << right;     //swap with XOR
-            *number ^= base << left;
-        }
-        right++;
-    }
-}
-
-void printBinary(long long int number) {
-   for (int i = 63; i >= 0; i--) {
-        char bit = (number >> i) & 1;
-        printf("%d", bit);
-    }
-    printf("\n");
-}
-
-int main(int argc, const char * argv[]) {
-       long long int number = 21;
-       printf("Original number: %lld\n", number);
-       printf("Original binary: ");
-       printBinary(number);
-       
-       change(&number);
-       
-       printf("Modified binary: ");
-       printBinary(number);
-       printf("Modified number: %lld\n", number);
-       
-       return 0;
-    //printf("%zu", sizeof(long long int));
-
+    long long int result = LittleToBigEndian(testNumber);
+    printf("Converted : ");
+    printHex(result);
+    
+    return 0;
 }
